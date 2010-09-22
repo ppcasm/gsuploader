@@ -1,38 +1,6 @@
 /*
 Modified version of HCS GSUpload - ppcasm
 (Compiled with Dev-Cpp 4.9.9.2)
-     
-First off, I would like to say that I have probably messed up a lot of HCS's code.
-       
-Differences:
-Not many, HCS did a pretty good job, I just wanted to see a solution that would load
-code in a more position/game independent way.
-        
-How it works (at least, as far as I know, which could be wrong):
-N64 gameshark works by patching the interrupt handler with some things, mainly
-a "code engine".  The code engine works by injecting some code during interrupts to patch
-certain memory addresses that you choose, so that if they change they will be patched with the
-same value over and over again.  The code handler is located at 0x807c5c00(cached) and 0xa07c5c00(uncached)
-and in order for execution to resume as normal a la $k0, 0x80000120 and jr $k0 is encountered.
-
-This uploader works by:
-      
-1.  Uploading your code.
-      
-2.  Patching the start of code engine with a jump to some embedded code for setup.
-        
-3.  Embedded code is used to patch the modified code engine area back to normal so your code
-doesn't keep getting executed.
-(if no codes are enabled, which they shouldn't be then the first instruction should
-be lui $k0, 0x8000 which is the first part of the la $k0, 0x80000120).
-       
-4.  The embedded code also is used to modify EPC to point to the start of your code so that
-when the interrupt handler is done executing it will return to your code, giving your program
-a main thread context instead of running in interrupt handler thread context and also allowing
-regular gameshark utilities to resume (hopefully).
-        
-5.  At this point, your code should be running. :-)    
-       
 */
  
 #include <stdio.h>
