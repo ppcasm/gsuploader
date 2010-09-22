@@ -1,0 +1,55 @@
+Modified version of HCS GSUpload - ppcasm
+Compiled with Dev-Cpp 4.9.9.2)
+
+I would like to give a big thank you to HCS, for whose work with his neon64 gameshark loader edition a lot of this would not have been possible.
+
+Things you will need:
+Nintendo64 (yeehaw right?)
+Nintendo64 GameShark Version 3.3 (the one with the parallel port on the back)
+Nintendo64 4MB ram expansion pack (This is where the code resides to handle some of the gameshark utilities while the game is running)
+Parallel port cable to connect N64 <-> PC
+
+After you have aquired these things you can create homebrew in any way that you wish so long as you set up your compiler
+environment and program to work together accordingly (see "How it works" to get a general idea of how to start)
+
+How to use:
+Note: This works most of the time, but surely I've not tested everything to be able to 100% say it will work _ALL_ the time.
+After you have generated the gsuploader binary:
+
+1. Start N64 game (as far as I have seen, it does not matter which one, but again, I cannot/have not tested them all)
+
+2. Run program with N64 binary filename as argument, example: gsuploader.exe funprogram.bin
+
+At this point you should get confirmation on the status of the binary upload, etc, etc. If all went well then you should be greeted by
+your running program.
+
+
+How it works (at least, as far as I know, which could be wrong):
+N64 gameshark works by patching the interrupt handler with some things, mainly
+a "code engine".  The code engine works by injecting some code during interrupts to patch
+certain memory addresses that you choose, so that if they change they will be patched with the
+same value over and over again.  The code handler is located at 0x807c5c00(cached) and 0xa07c5c00(uncached)
+and in order for execution to resume as normal a la $k0, 0x80000120 and jr $k0 is encountered.
+
+This uploader works by:
+      
+1.  Uploading your code.
+      
+2.  Patching the start of code engine with a jump to some embedded code for setup.
+        
+3.  Embedded code is used to patch the modified code engine area back to normal so your code
+doesn't keep getting executed.
+(if no codes are enabled, which they shouldn't be then the first instruction should
+be lui $k0, 0x8000 which is the first part of the la $k0, 0x80000120).
+       
+4.  The embedded code also is used to modify EPC to point to the start of your code so that
+when the interrupt handler is done executing it will return to your code, giving your program
+a main thread context instead of running in interrupt handler thread context and also allowing
+regular gameshark utilities to resume (hopefully).
+        
+5.  At this point, your code should be running. :-)    
+
+
+I have used a few different compilers successfully with changes to the way the program is linked, etc. I cannot particularly help with
+this aspect, maybe in the future I will find time to write up a tutorial, I hope to one day work on importing and using DrgnMndd's open source
+N64 library and hopefully easily tie it all in together with this uploader to facilitate cheap/dirty homebrew coding.
