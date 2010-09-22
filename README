@@ -3,6 +3,9 @@ Compiled with Dev-Cpp 4.9.9.2)
 
 I would like to give a big thank you to HCS, for whose work with his neon64 gameshark loader edition this would not have been possible.
 
+A linux version of this is totally possible with minimal code change, might get around to adding that support in 
+seamlessly with this one... one day. :p
+
 Things you will need:
 Nintendo64 (yeehaw right?)
 Nintendo64 GameShark Version 3.3 (the one with the parallel port on the back)
