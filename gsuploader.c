@@ -2,9 +2,17 @@
 Modified version of HCS GSUpload - ppcasm
 (Compiled with Dev-Cpp 4.9.9.2)
 */
- 
+
 #include <stdio.h>
+
+#ifdef LINUX
+#include <sys/io.h>
+#define _outp(x,y) outb(y,x)
+#define _inp(x) inb(x)
+#else
 #include <conio.h>
+#endif
+
 #define LPT1 0x378
 #define UPLOAD_ADDR 0x80300000 //Where to upload your code, and also where execution starts after embedded code runs.
 #define Out32(PortAddress, data) _outp(PortAddress, data)
@@ -28,6 +36,12 @@ long GetFileSizez(FILE *input);
  
 int main(int argc, char ** argv)
 {
+#ifdef LINUX
+    int ret = ioperm(LPT1, 10, 1);
+    if (ret < 0)
+        err(1, "ioperm");
+#endif
+
     /*Pull parport line low.*/
     Out32(LPT1, 0);
     
