@@ -11,6 +11,9 @@ Windows:
 
 At this point there has also been some success in getting libdragon (http://www.dragonminded.com/n64dev/libdragon)  working with this development environment. Hopefully a tutorial on setting up the environment to be used with this development process will be done shortly. 
 
+
+
+
 How to run your homebrew:
 
 Things you will need:
@@ -29,7 +32,9 @@ Note: This works most of the time, but surely I've not tested everything to be a
 
 At this point you should get confirmation on the status of the binary upload. If all went well then you should see your running program.
 
-How it works (at least, as far as I know, which could be wrong):
+
+
+How it works (hopefully):
 
 N64 gameshark works by relocating the general interrupt handler to 0xA0000120 and hooking utilities into the "regular" general interrupt handler at 0xA0000180 during which point in the execution path, a "code generator" gets executed. The code generator is basically an engine made up of instructions which act on behalf of GameShark codes, usually to make data at an address be written with a chosen value over and over again every time an interrupt occurs. This "engine" starts at at 0x807c5c00(cached) and 0xa07c5c00(uncached). In order for gameshark to continue normal interrupt processing and other things, it is usually a requirement that the last instructions in the code engine are la $k0, 0x80000120 and jr $k0, which then do a games normal interrupt processing and other things. 
 
