@@ -26,9 +26,9 @@ A PC with a parallel port (this can be a PCI card and such if you correctly conf
 How to use:
 Note: This works most of the time, but surely I've not tested everything to be able to 100% say it will work _ALL_ the time.
 
-1. Start N64 game (as far as I have seen, it does not matter which one, but again, I cannot/have not tested them all)
+1. Start N64 game (as far as I have seen it does not matter which one, but again, I cannot/have not tested them all.)
 
-2. On the GameShark menu, select: Start Game -> Code Generator: ON -> Start Game With No Codes.
+2. On the GameShark menu select: Start Game -> Code Generator: ON -> Start Game With No Codes.
 
 3. When the game starts, run the gsuploader program with the N64 binary filename as argument, example: gsuploader.exe funprogram.bin
 
@@ -38,7 +38,7 @@ At this point you should get confirmation on the status of the binary upload. If
 
 How it works (hopefully):
 
-N64 gameshark works by relocating the general interrupt handler to 0xA0000120 and hooking utilities into the "regular" general interrupt handler at 0xA0000180 during which point in the execution path, a "code generator" gets executed. The code generator is basically an engine made up of instructions which act on behalf of GameShark codes, usually to make data at an address be written with a chosen value over and over again every time an interrupt occurs. This "engine" starts at 0x807c5c00(cached) and 0xa07c5c00(uncached). In order for gameshark to continue normal interrupt processing and other things, it is usually a requirement that the last instructions in the code engine are la $k0, 0x80000120 and jr $k0, which then do a games normal interrupt processing and other things. 
+N64 GameShark works by relocating the general interrupt handler to 0xA0000120 and hooking GameShark utilities into the "regular" general interrupt handler at 0xA0000180 during which point in the execution path, a "code generator" gets executed. The code generator is basically an engine made up of instructions which act on behalf of GameShark codes, usually to make data at an address be written with a chosen value over and over again every time an interrupt occurs. This "engine" starts at 0x807c5c00(cached) and 0xa07c5c00(un-cached). In order for GameShark to continue normal interrupt processing and other things, it is usually a requirement that the last instructions in the code engine are la $k0, 0x80000120 and jr $k0, which then do a games normal interrupt processing and other things. 
 
 This uploader works by:
 
