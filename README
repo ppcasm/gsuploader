@@ -52,7 +52,7 @@ at this point the embedded code stub takes over and:
 
 5. Disables interrupts
 
-6. Modifies EPC in such a way that when a return from interrupt instruction is encountered, it return to your uploaded binary (remember, still at this point we are running in code engine context, which is running during interrupt processing.)
+6. Modifies EPC in such a way that when a return from interrupt instruction is encountered, it returns to your uploaded binary (remember, still at this point we are running in code engine context, which is running during interrupt processing.)
 
 7. Patches over the jump to embedded code at the start of the code engine back to the original instruction that was at the start of the code engine (if no codes were selected, as they should be, it should be lui $k0, 0x8000 which is the first part of la $k0, 0x80000120. The reason for this is so that the jump does not stay in ram and continue to be taken during every interrupt, we only need it once so we can gain control of main thread processing.)
 
