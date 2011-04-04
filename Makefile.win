@@ -12,7 +12,7 @@ INCS =  -I"C:/Dev-Cpp/include"
 CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include" 
 BIN  = gsuploader.exe
 CXXFLAGS = $(CXXINCS)  
-CFLAGS = $(INCS)  
+CFLAGS = $(INCS) -Wall  
 RM = rm -f
 
 .PHONY: all all-before all-after clean clean-custom
