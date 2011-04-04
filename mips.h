@@ -1,8 +1,15 @@
 /*Throw some defines in here to clean up*/
+
+//NOTE: Change this to suit your parallel port base address.
+#define LPT1 0xc400
+
 #define makejump(address) ((unsigned long )(address)<<2>>4|0x08000000)
 #define Out32(PortAddress, data) _outp(PortAddress, data)
 #define Inp32(PortAddress) _inp(PortAddress)
 #define INSN_PATCH_ADDR 0xA07C5C00 //GS Code Handler(uncached)
+#define GLOBAL_OFFSET_TABLE 0xA0000200 //Where to store exported function GOT.
+#define TMOUT 0x400 //This can probably be lower, it's set this high just for testing.
+
 int GOT_OFFSET;
 
 enum 
@@ -14,7 +21,6 @@ enum
 int InitGSComms(void);
 int CloseGSComms(void);
 int Upload(const unsigned char * buffer, unsigned long size, unsigned long address);
-int UploadFile(FILE * infile, unsigned long address);
 int Read(unsigned char * buffer, unsigned long size, unsigned long address);
 int GSFcn1(int);
 int SendNibble(int);
@@ -22,8 +28,8 @@ int ReadWriteNibble(int);
 int ReadWriteByte(int);
 unsigned long ReadWrite32(unsigned long);
 int CheckGSPresence(void);
-long GetFileSizez(FILE *input);
 void export_funcs(void);
+void debugger(void);
 
 /*Spinouts mips macro set*/
 
