@@ -2,7 +2,7 @@
 #include "mips.h"
 #define LPT1 0xc400
 #define UPLOAD_ADDR 0xA0300000 //Where to upload your code, and also where execution starts after embedded code runs.
-#define GLOBAL_OFFSET_TABLE 0xA0500400 //Where to store exported function GOT.
+#define GLOBAL_OFFSET_TABLE 0xA0500000 //Where to store exported function GOT.
 #define TMOUT 0x4000 //This can probably be lower, it's set this high just for testing.
 unsigned char GAMESHARK_COMMS_INIT_GOT[4];
 unsigned char GAMESHARK_CHECK_GSBUTTON_GOT[4];
@@ -157,9 +157,11 @@ unsigned char GAMESHARK_CHECK_GSBUTTON_GOT[4];
 int main(int argc, char ** argv)
 {
 
-  //export_funcs(); //Build GOT export list for built in functions.
+  export_funcs(); //Build GOT export list for built in functions.
   
   int i = 0;
+  unsigned char *pointprebuf=(unsigned char *)&codebuf_pre;
+  unsigned char codebuf[sizeof(codebuf_pre)];  
   
 #ifdef LINUX
     int ret = ioperm(LPT1, 10, 1);
@@ -185,16 +187,19 @@ int main(int argc, char ** argv)
        return 1;
     }
    
-    printf("File Size: %d bytes...\n", GetFileSizez(infile));  
-
-    unsigned char codebuf[sizeof(codebuf_pre)];   
-    for(i=0;i<=sizeof(codebuf_pre)/4;i++)
+    printf("File Size: %d bytes...\n", (int)GetFileSizez(infile));  
+    
+       
+    for(i=0;i<=sizeof(codebuf_pre)/sizeof(unsigned long);i++)
     {
-         codebuf_pre[i] = codebuf_pre[i]<<24&0xff000000|codebuf_pre[i]<<8&0x00ff0000|codebuf_pre[i]>>8&0x0000ff00|codebuf_pre[i]>>24&0xff; 
+         codebuf_pre[i] = (codebuf_pre[i]<<24&0xff000000)|(codebuf_pre[i]<<8&0x00ff0000)|(codebuf_pre[i]>>8&0x0000ff00)|(codebuf_pre[i]>>24&0xff); 
     }
     
-    memcpy(&codebuf, &codebuf_pre, sizeof(codebuf_pre)); 
-
+    for(i=0;i<=sizeof(codebuf);i++)
+    {
+         codebuf[i]=pointprebuf[i];                                  
+    }
+   
     /*Upload binary to specified address.*/
     if(UploadFile(infile,UPLOAD_ADDR))
     {
@@ -214,7 +219,7 @@ int main(int argc, char ** argv)
        return 1;
     }
    
-    printf("Uploaded embedded code to: 0x%08x.\n", EMBED_ADDR);
+    printf("Uploaded embedded code to: 0x%08x.\n", (unsigned int)EMBED_ADDR);
     
     /*Make synthetic jump instruction based on address.*/
     unsigned long instruction=makejump(EMBED_ADDR);
@@ -237,7 +242,7 @@ int main(int argc, char ** argv)
     printf("Done.\n");
    
     Out32(LPT1, 0);
-    close(infile);
+    fclose(infile);
   return 0;
 }
 
@@ -368,7 +373,7 @@ int UploadFile(FILE * infile, unsigned long address) {
  
         if (InitGSComms()) return 1;
        
-    printf("Uploading File to %x | 00%%", address);
+    printf("Uploading File to %x | 00%%", (int)address);
  
     ReadWriteByte(2);
         ReadWrite32(address);
@@ -376,7 +381,7 @@ int UploadFile(FILE * infile, unsigned long address) {
        
         for (c=0; c < size; c++) {
                 fread(&buf,1,1,infile);
-                if (c & 0x400) printf("\b\b\b%02d%%",c*100/size);
+                if (c & 0x400) printf("\b\b\b%02lu%%", c*100/size);
                 ReadWriteByte(buf);
         }
  
