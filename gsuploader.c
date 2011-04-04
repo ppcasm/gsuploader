@@ -1,9 +1,9 @@
 #include <stdio.h>
+#include <string.h>
 #include "mips.h"
-#define LPT1 0xc400
 #define UPLOAD_ADDR 0xA0300000 //Where to upload your code, and also where execution starts after embedded code runs.
-#define GLOBAL_OFFSET_TABLE 0xA0000200 //Where to store exported function GOT.
-#define TMOUT 0x4000 //This can probably be lower, it's set this high just for testing.
+int UploadFile(FILE *infile, unsigned long address); 
+long GetFileSizez(FILE *input); 
 unsigned char GAMESHARK_COMMS_INIT_GOT[4];
 unsigned char GAMESHARK_CHECK_GSBUTTON_GOT[4];
 
@@ -159,8 +159,6 @@ unsigned char _inp(unsigned short address);
 int main(int argc, char ** argv)
 {
 
-  //export_funcs(); //Build GOT export list for built in functions.
-  
   int i = 0;
   unsigned char *pointprebuf=(unsigned char *)&codebuf_pre;
   unsigned char codebuf[sizeof(codebuf_pre)];  
@@ -170,18 +168,34 @@ int main(int argc, char ** argv)
     if (ret < 0)
         err(1, "ioperm");
 #endif
-
-    /*Pull parport line low.*/
-    Out32(LPT1, 0);
-     
-    printf("N64 HomeBrew Loader - ppcasm\n(Based on HCS GSUpload - http://here.is/halleyscomet)\n\n");
+ 
+    printf("\nN64 HomeBrew Loader - ppcasm\n(Based on HCS GSUpload - http://here.is/halleyscomet)\n\n");
    
     if(argc!=2)
     {
-       printf("Wrong Usage: %s <binary>\n", argv[0]);
+       printf("Wrong Usage:\n(Homebrew Uploader): %s <binary>\n(Disassembler/Debugger): %s -d", argv[0], argv[0]);
+       Out32(LPT1, 0);
        return 1;
     }
-   
+    
+    if(!strcmp(argv[1], "-d"))
+    {
+       debugger();
+       return 0;
+    }
+
+    if(UPLOAD_ADDR-sizeof(codebuf_pre)<=0x80000190||UPLOAD_ADDR-sizeof(codebuf_pre)<=0xA0000190)
+    {
+       printf("\n\nWARNING: Possible pre-setup code and interrupt handler collision!\n\n");
+    }
+    
+    if(GLOBAL_OFFSET_TABLE<=0x80000190||GLOBAL_OFFSET_TABLE<=0xA0000190)
+    {
+      printf("\n\nWARNING: Possible Global Offset Table and interrupt handler collision!\n\n");
+    }
+ 
+    //export_funcs(); //Build GOT export list for built in functions.   
+ 
     FILE* infile=fopen(argv[1], "rb");
     if(!infile)
     {
@@ -242,8 +256,6 @@ int main(int argc, char ** argv)
     }
 
     printf("Done.\n");
-   
-    Out32(LPT1, 0);
     fclose(infile);
   return 0;
 }
@@ -251,7 +263,7 @@ int main(int argc, char ** argv)
 void export_funcs(void)
 {
         printf("\nDbg: Function Callbacks:\n");
-
+        printf("\nGlobal Offset Table base address: %x\n", GLOBAL_OFFSET_TABLE);
         int i = 0;
         for(i=0;i<=sizeof(codebuf_pre)/4;i++)
         {
@@ -297,7 +309,7 @@ void export_funcs(void)
      printf("\n");
    return;
 }
-     
+ 
 long GetFileSizez(FILE *input)
 {
         long current, end;
