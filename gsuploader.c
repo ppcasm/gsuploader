@@ -159,7 +159,7 @@ unsigned char _inp(unsigned short address);
 int main(int argc, char ** argv)
 {
 
-  export_funcs(); //Build GOT export list for built in functions.
+  //export_funcs(); //Build GOT export list for built in functions.
   
   int i = 0;
   unsigned char *pointprebuf=(unsigned char *)&codebuf_pre;
