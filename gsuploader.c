@@ -12,7 +12,9 @@ unsigned char GAMESHARK_CHECK_GSBUTTON_GOT[4];
 #define _outp(x,y) outb(y,x)
 #define _inp(x) inb(x)
 #else
-#include <conio.h>
+//Some reason Dev-Cpp conio.h doesn't define this.
+void _outp(unsigned short port, unsigned char data);
+unsigned char _inp(unsigned short port);
 #endif
 
 
@@ -420,11 +422,11 @@ int GSFcn1(int x) {
 int SendNibble(int x) {
         int timeout=TMOUT,retval;
        
-        Out32(LPT1,x&0x0f|0x10);
+        Out32(LPT1,(x&0x0f)|0x10);
  
         while (timeout && Inp32(LPT1+1)&8) timeout--;
        
-        retval=(Inp32(LPT1+1)&0xf0^0x80)>>4;
+        retval=(Inp32((LPT1+1)&0xf0)^0x80)>>4;
  
         Out32(LPT1,0);
  
@@ -437,12 +439,12 @@ int SendNibble(int x) {
  
 int ReadWriteNibble(int x) {
         int retval;
-        Out32(LPT1,x&0x0f|0x10);
+        Out32(LPT1,(x&0x0f)|0x10);
        
         while ((~Inp32(LPT1+1))&8);
         while ((~Inp32(LPT1+1))&8);
  
-        retval=(Inp32(LPT1+1)&0xf0^0x80)>>4;
+        retval=(Inp32((LPT1+1)&0xf0)^0x80)>>4;
  
         Out32(LPT1,0);
  
