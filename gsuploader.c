@@ -180,7 +180,7 @@ int main(int argc, char ** argv)
     
     if(!strcmp(argv[1], "-d"))
     {
-       debugger();
+       //debugger();
        return 0;
     }
 
