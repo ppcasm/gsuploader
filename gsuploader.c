@@ -2,7 +2,7 @@
 #include "mips.h"
 #define LPT1 0xc400
 #define UPLOAD_ADDR 0xA0300000 //Where to upload your code, and also where execution starts after embedded code runs.
-#define GLOBAL_OFFSET_TABLE 0xA0500000 //Where to store exported function GOT.
+#define GLOBAL_OFFSET_TABLE 0xA0000200 //Where to store exported function GOT.
 #define TMOUT 0x4000 //This can probably be lower, it's set this high just for testing.
 unsigned char GAMESHARK_COMMS_INIT_GOT[4];
 unsigned char GAMESHARK_CHECK_GSBUTTON_GOT[4];
@@ -12,9 +12,9 @@ unsigned char GAMESHARK_CHECK_GSBUTTON_GOT[4];
 #define _outp(x,y) outb(y,x)
 #define _inp(x) inb(x)
 #else
-//Some reason Dev-Cpp conio.h doesn't define this.
-void _outp(unsigned short port, unsigned char data);
-unsigned char _inp(unsigned short port);
+//Dev-Cpp conio.h does not define these.
+void _outp(unsigned short address, unsigned char data);
+unsigned char _inp(unsigned short address);
 #endif
 
 
@@ -159,7 +159,7 @@ unsigned char _inp(unsigned short port);
 int main(int argc, char ** argv)
 {
 
-  //export_funcs(); //Build GOT export list for built in functions.
+  export_funcs(); //Build GOT export list for built in functions.
   
   int i = 0;
   unsigned char *pointprebuf=(unsigned char *)&codebuf_pre;
@@ -426,7 +426,7 @@ int SendNibble(int x) {
  
         while (timeout && Inp32(LPT1+1)&8) timeout--;
        
-        retval=(Inp32((LPT1+1)&0xf0)^0x80)>>4;
+        retval=(Inp32(LPT1+1)&(0xf0^0x80))>>4;
  
         Out32(LPT1,0);
  
@@ -444,7 +444,7 @@ int ReadWriteNibble(int x) {
         while ((~Inp32(LPT1+1))&8);
         while ((~Inp32(LPT1+1))&8);
  
-        retval=(Inp32((LPT1+1)&0xf0)^0x80)>>4;
+        retval=(Inp32(LPT1+1)&(0xf0^0x80))>>4;
  
         Out32(LPT1,0);
  
