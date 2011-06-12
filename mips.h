@@ -457,6 +457,7 @@ enum
 #define MIPS_ADD(rd, rs, rt)        (OP(0x00) | RS(rs) | RT(rt) | RD(rd) | 0x20)
 #define MIPS_ADDI(rt, rs, immd)     (OP(0x08) | RS(rs) | RT(rt) | IM(immd))
 #define MIPS_ADDIU(rt, rs, immd)    (OP(0x09) | RS(rs) | RT(rt) | IM(immd))
+#define MIPS_AND(rd, rs, rt)        (OP(0x00) | RS(rs) | RT(rt) | RD(rd) | 0x24)
 #define MIPS_ANDI(rt, rs, immd)     (OP(0x0C) | RS(rs) | RT(rt) | IM(immd))
 #define MIPS_BC1F(off)              (OP(0x11) | RS(0x08) | OF(off))
 #define MIPS_BC1FL(off)             (OP(0x11) | RS(0x08) | RT(0x02) | OF(off))

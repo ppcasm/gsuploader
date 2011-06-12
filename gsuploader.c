@@ -33,8 +33,8 @@ unsigned char _inp(unsigned short address);
     
     /* Disable Interrupts */
         MFC0(MIPS_T0, 12),
-      	0x2409fffe, 
-        0x01094024, 
+        MIPS_ADDIU(MIPS_T1, MIPS_R0, 0xfffe),
+        MIPS_AND(MIPS_T0, MIPS_T0, MIPS_T1),
       	MTC0(MIPS_T0, 12),
          
     /* Modify EPC */
