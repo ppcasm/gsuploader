@@ -1,7 +1,7 @@
 /*Throw some defines in here to clean up*/
 
 //NOTE: Change this to suit your parallel port base address.
-#define LPT1 0xc400
+#define LPT1 0x378
 
 #define makejump(address) ((unsigned long )(address)<<2>>4|0x08000000)
 #define Out32(PortAddress, data) _outp(PortAddress, data)
